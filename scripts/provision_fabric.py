@@ -85,9 +85,9 @@ def provision_slice(slice_name="crux_testbed"):
     
     # Save details
     details = {
-        "worker-a": slice.get_node('worker-a').get_management_ip(),
-        "worker-b": slice.get_node('worker-b').get_management_ip(),
-        "scheduler-c": slice.get_node('scheduler-c').get_management_ip()
+        "worker-a": str(slice.get_node('worker-a').get_management_ip()),
+        "worker-b": str(slice.get_node('worker-b').get_management_ip()),
+        "scheduler-c": str(slice.get_node('scheduler-c').get_management_ip())
     }
     with open("slice_details.json", "w") as f:
         json.dump(details, f)
