@@ -32,23 +32,24 @@ def provision_slice(slice_name="crux_testbed"):
     RAM = 10
     DISK = 100
     IMAGE = 'default_ubuntu_20'
+    SITE = 'SALT'  # Force all nodes to same site (L2 networks limited to 2 sites)
 
     # 1. Add Nodes
     # Worker A
     print("Adding Worker A...")
-    worker_a = slice.add_node(name='worker-a', cores=CORES, ram=RAM, disk=DISK, image=IMAGE)
+    worker_a = slice.add_node(name='worker-a', site=SITE, cores=CORES, ram=RAM, disk=DISK, image=IMAGE)
     worker_a.add_component(model='GPU_TeslaT4', name='gpu1')
     iface_a = worker_a.add_component(model='NIC_Basic', name='nic1').get_interfaces()[0]
 
     # Worker B
     print("Adding Worker B...")
-    worker_b = slice.add_node(name='worker-b', cores=CORES, ram=RAM, disk=DISK, image=IMAGE)
+    worker_b = slice.add_node(name='worker-b', site=SITE, cores=CORES, ram=RAM, disk=DISK, image=IMAGE)
     worker_b.add_component(model='GPU_TeslaT4', name='gpu1')
     iface_b = worker_b.add_component(model='NIC_Basic', name='nic1').get_interfaces()[0]
 
     # Scheduler C
     print("Adding Scheduler C...")
-    scheduler_c = slice.add_node(name='scheduler-c', cores=CORES, ram=RAM, disk=DISK, image=IMAGE)
+    scheduler_c = slice.add_node(name='scheduler-c', site=SITE, cores=CORES, ram=RAM, disk=DISK, image=IMAGE)
     iface_c = scheduler_c.add_component(model='NIC_Basic', name='nic1').get_interfaces()[0]
 
     # 2. L2 Network
