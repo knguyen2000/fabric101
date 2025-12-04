@@ -3,6 +3,17 @@ import time
 import json
 from fabrictestbed_extensions.fablib.fablib import FablibManager as fablib_manager
 
+fab_dir = os.path.expanduser('~/.fabric')
+os.makedirs(fab_dir, exist_ok=True)
+
+os.environ['FABRIC_TOKEN_LOCATION'] = os.path.join(fab_dir, 'id_token.json')
+os.environ['FABRIC_BASTION_KEY_LOCATION'] = os.path.join(fab_dir, 'bastion_key')
+os.environ['FABRIC_SLICE_PRIVATE_KEY_FILE'] = os.path.join(fab_dir, 'slice_key')
+os.environ['FABRIC_SLICE_PUBLIC_KEY_FILE'] = os.path.join(fab_dir, 'slice_key.pub')
+
+os.environ['FABRIC_LOG_LEVEL'] = os.environ.get('FABRIC_LOG_LEVEL', 'CRITICAL')
+os.environ['FABRIC_QUIET'] = 'True'
+
 def provision_slice(slice_name="crux_testbed"):
     fablib = fablib_manager()
     
