@@ -1,10 +1,12 @@
-name: Provision FABRIC Infrastructure
+name: Run Experiment on FABRIC
 
 on:
-  workflow_dispatch: # Manual trigger only
+  push:
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  experiment:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -49,19 +51,20 @@ jobs:
           FABRIC_SLICE_PUBLIC_KEY_FILE=/home/runner/.fabric/slice_key.pub
           EOF
 
-      - name: Run Deployment
+      - name: Deploy and Run Experiment
         env:
           FABRIC_LOG_LEVEL: INFO
           FABRIC_RC_FILE: ${{ github.workspace }}/fabric_rc
         run: |
-          python scripts/provision_fabric.py
+          python scripts/deploy_and_run.py
 
-      - name: Upload Artifacts (Logs & Data)
+      - name: Upload Experiment Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: deployment-artifacts
+          name: experiment-results
           path: |
             *.log
             *.csv
             *.png
+            *.json
