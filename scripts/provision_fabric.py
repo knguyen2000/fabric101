@@ -1,6 +1,7 @@
 import os
 import time
 import json
+from ipaddress import IPv4Network
 from fabrictestbed_extensions.fablib.fablib import FablibManager as fablib_manager
 
 fab_dir = os.path.expanduser('~/.fabric')
@@ -69,15 +70,15 @@ def provision_slice(slice_name="crux_testbed"):
     # Scheduler C: 192.168.10.12
     
     iface_a = slice.get_node('worker-a').get_interface(network_name='crux_net')
-    iface_a.ip_addr_add(addr='192.168.10.10', subnet='255.255.255.0')
+    iface_a.ip_addr_add(addr='192.168.10.10', subnet=IPv4Network('192.168.10.0/24'))
     iface_a.ip_link_up()
 
     iface_b = slice.get_node('worker-b').get_interface(network_name='crux_net')
-    iface_b.ip_addr_add(addr='192.168.10.11', subnet='255.255.255.0')
+    iface_b.ip_addr_add(addr='192.168.10.11', subnet=IPv4Network('192.168.10.0/24'))
     iface_b.ip_link_up()
 
     iface_c = slice.get_node('scheduler-c').get_interface(network_name='crux_net')
-    iface_c.ip_addr_add(addr='192.168.10.12', subnet='255.255.255.0')
+    iface_c.ip_addr_add(addr='192.168.10.12', subnet=IPv4Network('192.168.10.0/24'))
     iface_c.ip_link_up()
 
     print("Slice provisioning complete.")
