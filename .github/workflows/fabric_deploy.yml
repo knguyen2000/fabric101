@@ -54,7 +54,7 @@ jobs:
         env:
           FABRIC_LOG_LEVEL: INFO
         run: |
-          python fabric_deploy.py
+          python scripts/provision_fabric.py
 
       - name: Upload Artifacts (Logs & Data)
         if: always()
