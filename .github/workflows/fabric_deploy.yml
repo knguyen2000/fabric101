@@ -1,23 +1,25 @@
 name: FABRIC Deploy
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install fabrictestbed-extensions pandas pyjwt
 
       - name: Configure FABRIC Credentials
         env:
@@ -48,13 +50,18 @@ jobs:
           FABRIC_SLICE_PUBLIC_KEY_FILE=/home/runner/.fabric/slice_key.pub
           EOF
 
-      - name: Provision FABRIC Slice
+      - name: Run Deployment
         env:
           FABRIC_LOG_LEVEL: INFO
-        run: python scripts/provision_fabric.py
+        run: |
+          python fabric_deploy.py
 
-      - name: Upload Slice Details
+      - name: Upload Artifacts (Logs & Data)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: slice-details
-          path: slice_details.json
+          name: deployment-artifacts
+          path: |
+            *.log
+            *.csv
+            *.png
