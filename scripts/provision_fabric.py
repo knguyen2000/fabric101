@@ -30,7 +30,7 @@ def provision_slice(slice_name="crux_testbed"):
     # Constraints
     CORES = 2
     RAM = 10
-    DISK = 100
+    DISK = 10  # Max allowed without VM.NoLimitDisk tag
     IMAGE = 'default_ubuntu_20'
     SITE = 'SALT'  # Force all nodes to same site (L2 networks limited to 2 sites)
 
