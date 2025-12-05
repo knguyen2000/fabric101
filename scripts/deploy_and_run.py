@@ -46,8 +46,8 @@ def deploy_and_run(slice_name="crux_testbed"):
         node.upload_directory('src', 'crux_testbed/src')
         node.upload_directory('scripts', 'crux_testbed/scripts')
         
-        # Install dependencies (CPU-only torch to save disk space)
-        node.execute('pip3 install torch --index-url https://download.pytorch.org/whl/cpu')
+        # Install dependencies (CPU-only torch compatible with Python 3.8)
+        node.execute('pip3 install torch==2.0.1+cpu --index-url https://download.pytorch.org/whl/cpu')
         node.execute('pip3 install numpy matplotlib')
     
     print("✓ Code deployed to all nodes")
@@ -60,8 +60,8 @@ def deploy_and_run(slice_name="crux_testbed"):
     iface_name = result[0].strip() if result else 'eth1'
     print(f"  Detected interface: {iface_name}")
     
-    # Apply bandwidth shaping
-    scheduler_c.execute(f'sudo tc qdisc del dev {iface_name} root || true')  # Clear existing
+    # Apply bandwidth shaping (suppress error if qdisc doesn't exist)
+    scheduler_c.execute(f'sudo tc qdisc del dev {iface_name} root 2>/dev/null || true')
     scheduler_c.execute(f'sudo tc qdisc add dev {iface_name} root tbf rate 1gbit burst 32kbit latency 200ms')
     print("✓ Bandwidth shaping configured")
     
