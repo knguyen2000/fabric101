@@ -46,16 +46,23 @@ def deploy_and_run(slice_name="crux_testbed"):
         node.upload_directory('src', 'crux_testbed/src')
         node.upload_directory('scripts', 'crux_testbed/scripts')
         
-        # Install dependencies
-        node.execute('sudo apt-get update && sudo apt-get install -y python3-pip iproute2')
-        node.execute('pip3 install torch numpy matplotlib')
+        # Install dependencies (CPU-only torch to save disk space)
+        node.execute('pip3 install torch --index-url https://download.pytorch.org/whl/cpu')
+        node.execute('pip3 install numpy matplotlib')
     
     print("✓ Code deployed to all nodes")
     
     # Configure bandwidth shaping on scheduler
     print("\n🌐 Configuring network bandwidth...")
-    scheduler_c.execute('sudo tc qdisc del dev eth1 root || true')  # Clear existing
-    scheduler_c.execute('sudo tc qdisc add dev eth1 root tbf rate 1gbit burst 32kbit latency 200ms')
+    
+    # Detect the L2 network interface (not loopback)
+    result = scheduler_c.execute("ip -o link show | grep -v 'lo:' | grep -v 'LOOPBACK' | awk '{print $2}' | head -1 | tr -d ':'")
+    iface_name = result[0].strip() if result else 'eth1'
+    print(f"  Detected interface: {iface_name}")
+    
+    # Apply bandwidth shaping
+    scheduler_c.execute(f'sudo tc qdisc del dev {iface_name} root || true')  # Clear existing
+    scheduler_c.execute(f'sudo tc qdisc add dev {iface_name} root tbf rate 1gbit burst 32kbit latency 200ms')
     print("✓ Bandwidth shaping configured")
     
     # Run experiment
