@@ -87,19 +87,31 @@ def deploy_and_run(slice_name="crux_testbed"):
     # Collect results
     print("\n📥 Collecting results...")
     
-    worker_a.download_file('crux_testbed/worker_a.log', 'worker_a.log')
-    worker_b.download_file('crux_testbed/worker_b.log', 'worker_b.log')
-    scheduler_c.download_file('crux_testbed/scheduler.log', 'scheduler.log')
+    # Download log files (if they exist)
+    try:
+        worker_a.download_file('/home/ubuntu/crux_testbed/worker_a.log', 'worker_a.log')
+    except Exception as e:
+        print(f"  Warning: Could not download worker_a.log: {e}")
     
-    print("✓ Results downloaded")
+    try:
+        worker_b.download_file('/home/ubuntu/crux_testbed/worker_b.log', 'worker_b.log')
+    except Exception as e:
+        print(f"  Warning: Could not download worker_b.log: {e}")
+    
+    try:
+        scheduler_c.download_file('/home/ubuntu/crux_testbed/scheduler.log', 'scheduler.log')
+    except Exception as e:
+        print(f"  Warning: Could not download scheduler.log: {e}")
+    
+    print("✓ Results download attempted")
     
     # Save node info
     results = {
         "slice_name": slice_name,
         "nodes": {
-            "worker-a": worker_a.get_management_ip(),
-            "worker-b": worker_b.get_management_ip(),
-            "scheduler-c": scheduler_c.get_management_ip()
+            "worker-a": str(worker_a.get_management_ip()),
+            "worker-b": str(worker_b.get_management_ip()),
+            "scheduler-c": str(scheduler_c.get_management_ip())
         },
         "status": "completed"
     }
